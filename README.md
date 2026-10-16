@@ -2,7 +2,7 @@
 
 A gentle, heartfelt game by **Snoopster Gaming** about the life of one very good dog.
 
-Oreo is a fluffy black-and-white cockapoo puppy who comes home to Mia and her family. You live his whole life with him, from the nervous first night to a grey-muzzled old friend asleep in the evening sun.
+Oreo is a fluffy, light cream cockapoo puppy who comes home to Mia and her family. You live his whole life with him, from the nervous first night to a grey-muzzled old friend asleep in the evening sun.
 
 ## How it plays
 

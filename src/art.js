@@ -240,7 +240,8 @@
 
 
 
-  // ---------- Oreo, a black-and-white cockapoo ----------
+  // ---------- Oreo, a light, creamy-apricot cockapoo ----------
+  const EAR = '#d39c63', CURL = 'rgba(150,95,45,.38)';
   // A scalloped "fluffy" ellipse: the curly cockapoo coat.
   function fluff(c, cx, cy, rx, ry, n, amp, rot) {
     n = n || 18; amp = amp || 4; rot = rot || 0;
@@ -268,7 +269,7 @@
     const age = o.age == null ? 0.5 : o.age;
     const pup = Math.max(0, 1 - age * 3);          // 1 = tiny puppy, fades out as he grows
     const old = Math.max(0, (age - 0.72) / 0.28);  // grey muzzle creeps in at the end
-    const BLK = '#1d1b22', WHT = '#fbf7ee', GREY = shade('#1d1b22', 0.55 * old);
+    const BLK = '#e7c899', WHT = '#fdf7ea', GREY = shade('#e7c899', 0.4 * old);
     const pose = o.pose || 'stand', ph = o.phase || 0, t = o.t || 0;
     c.save(); c.translate(x, y); c.scale(s * (o.flip ? -1 : 1), s);
     c.lineJoin = 'round'; c.lineCap = 'round'; c.strokeStyle = OUT; c.lineWidth = 3.4;
@@ -295,13 +296,13 @@
       c.fillStyle = WHT; rr(c, -bodyL / 2 + 22, -8, 24, 10, 5); c.fill(); c.stroke();
     } else {
       const sw = walk ? Math.sin(ph) * (run ? 0.7 : 0.4) : 0;
-      leg(-bodyL / 2 + 12, -legH - 4, sw, shade(BLK, 0.08), true);
+      leg(-bodyL / 2 + 12, -legH - 4, sw, shade(BLK, -0.08), true);
       leg(-bodyL / 2 + 22, -legH - 4, -sw, BLK, true);
     }
     // body
     c.save(); if (sit) { c.translate(-6, -legH - 6); c.rotate(-0.85); c.translate(6, legH + 6); }
     c.fillStyle = BLK; fluff(c, 0, -legH - 18, bodyL / 2, 22 - pup * 2, 22, 4.5); c.fill(); c.stroke();
-    curls(c, -6, -legH - 22, bodyL / 2 - 10, 14, 14, 'rgba(255,255,255,.13)', 1);
+    curls(c, -6, -legH - 22, bodyL / 2 - 10, 14, 14, CURL, 1);
     // white chest and belly
     c.save(); c.beginPath(); c.ellipse(0, -legH - 18, bodyL / 2 - 2, 20 - pup * 2, 0, 0, TAU); c.clip();
     c.fillStyle = WHT; c.beginPath(); c.ellipse(bodyL / 2 - 8, -legH - 10, 22, 22, 0, 0, TAU); c.fill(); c.beginPath(); c.ellipse(4, -legH - 2, bodyL / 2 - 10, 9, 0, 0, TAU); c.fill();
@@ -311,7 +312,7 @@
     if (pose === 'beg') { leg(bodyL / 2 - 14, -legH - 30, -1.6, BLK, true); leg(bodyL / 2 - 8, -legH - 26, -1.3, BLK, true); }
     else if (sit) { leg(bodyL / 2 - 26, -legH - 4, 0.02, BLK, true); leg(bodyL / 2 - 16, -legH - 4, -0.02, BLK, true); }
     else if (pose === 'jump') { leg(bodyL / 2 - 14, -legH - 10, -1.1, BLK, true); leg(bodyL / 2 - 6, -legH - 10, -0.9, BLK, true); }
-    else { const sw = walk ? Math.sin(ph + Math.PI) * (run ? 0.8 : 0.4) : 0; leg(bodyL / 2 - 16, -legH - 4, sw, shade(BLK, 0.08), true); leg(bodyL / 2 - 6, -legH - 4, -sw, BLK, true); }
+    else { const sw = walk ? Math.sin(ph + Math.PI) * (run ? 0.8 : 0.4) : 0; leg(bodyL / 2 - 16, -legH - 4, sw, shade(BLK, -0.08), true); leg(bodyL / 2 - 6, -legH - 4, -sw, BLK, true); }
     // collar
     const hx = bodyL / 2 + 4 - (sit ? 18 : 0), hy = -legH - 44 - (sit ? 28 : 0) + (pose === 'beg' ? -8 : 0);
     c.fillStyle = '#e5203a'; c.save(); c.translate(hx - 8, hy + 18); c.rotate(-0.5); rr(c, -6, -14, 12, 28, 5); c.fill(); c.stroke(); c.restore();
@@ -323,11 +324,11 @@
   function dogHead(c, hx, hy, k, o, BLK, WHT, GREY, t, old) {
     c.save(); c.translate(hx, hy); c.scale(k, k); c.rotate(o.tilt || Math.sin(t * 0.7) * 0.04);
     // back ear (long and curly)
-    c.fillStyle = shade(BLK, 0.1); for (let i = 0; i < 4; i++) { fluff(c, -14 - i * 1.5, -8 + i * 9, 10 - i, 8, 8, 2.5); c.fill(); c.stroke(); }
+    c.fillStyle = shade(EAR, -0.08); for (let i = 0; i < 4; i++) { fluff(c, -14 - i * 1.5, -8 + i * 9, 10 - i, 8, 8, 2.5); c.fill(); } c.lineWidth = 3.4; c.strokeStyle = OUT;
     // head: round and fluffy, with a curly top-knot
     c.fillStyle = BLK; fluff(c, 0, -10, 25, 23, 16, 4); c.fill(); c.stroke();
     fluff(c, 0, -32, 13, 8, 9, 3.5); c.fill(); c.stroke();
-    curls(c, -2, -20, 18, 12, 9, 'rgba(255,255,255,.14)', 2);
+    curls(c, -2, -20, 18, 12, 9, CURL, 2);
     // white blaze down the face and a white muzzle
     c.save(); c.beginPath(); c.ellipse(0, -10, 23, 21, 0, 0, TAU); c.clip();
     c.fillStyle = WHT; c.beginPath(); c.moveTo(6, -34); c.quadraticCurveTo(14, -20, 16, -4); c.lineTo(4, -2); c.quadraticCurveTo(2, -20, 6, -34); c.fill();
@@ -335,7 +336,7 @@
     c.fillStyle = old > 0 ? shade(WHT, -0.06) : WHT; fluff(c, 18, -1, 15, 12, 12, 3); c.fill(); c.stroke();
     // a fluffy white beard under the chin
     fluff(c, 14, 10, 10, 6, 8, 3); c.fill(); c.stroke();
-    if (old > 0) { c.fillStyle = `rgba(200,200,205,${0.9 * old})`; c.beginPath(); c.ellipse(4, -16, 12, 8, 0, 0, TAU); c.fill(); c.beginPath(); c.ellipse(16, -24, 7, 4, 0.4, 0, TAU); c.fill(); c.beginPath(); c.ellipse(-10, -2, 8, 10, 0, 0, TAU); c.fill(); }
+    if (old > 0) { c.fillStyle = `rgba(255,255,255,${0.85 * old})`; c.beginPath(); c.ellipse(4, -16, 12, 8, 0, 0, TAU); c.fill(); c.beginPath(); c.ellipse(16, -24, 7, 4, 0.4, 0, TAU); c.fill(); c.beginPath(); c.ellipse(-10, -2, 8, 10, 0, 0, TAU); c.fill(); }
     // eye
     const ey = -14, ex = 8;
     if (o.blink || o.sleepy) { c.strokeStyle = OUT; c.lineWidth = 3; c.beginPath(); c.arc(ex, ey + 1, 5, 0.1 * Math.PI, 0.9 * Math.PI); c.stroke(); }
@@ -345,10 +346,10 @@
       c.fillStyle = '#111'; c.beginPath(); c.arc(ex + 2 + (o.look || 0), ey + 1, 3, 0, TAU); c.fill();
       c.fillStyle = '#fff'; c.beginPath(); c.arc(ex + 0.5, ey - 2, 2.2, 0, TAU); c.fill();
       // eyebrow dot: the "puppy eyes"
-      c.fillStyle = '#b08a6a'; c.beginPath(); c.ellipse(ex - 2, ey - 11, 4, 2.5, -0.3, 0, TAU); c.fill();
+      c.fillStyle = '#c08a58'; c.beginPath(); c.ellipse(ex - 2, ey - 11, 4, 2.5, -0.3, 0, TAU); c.fill();
     }
     // nose and mouth
-    c.fillStyle = '#111'; c.beginPath(); c.ellipse(31, -6, 6, 5, 0, 0, TAU); c.fill();
+    c.fillStyle = '#3a2214'; c.beginPath(); c.ellipse(31, -6, 6, 5, 0, 0, TAU); c.fill();
     c.fillStyle = 'rgba(255,255,255,.5)'; c.beginPath(); c.arc(30, -8, 1.6, 0, TAU); c.fill();
     c.strokeStyle = OUT; c.lineWidth = 2.6; c.beginPath(); c.moveTo(30, 0); c.quadraticCurveTo(27, 6, 20, 4); c.stroke();
     if (o.tongue) { c.fillStyle = '#ff7aa0'; c.beginPath(); c.ellipse(23, 9 + Math.sin(t * 10) * 1.5, 5, 8, 0.2, 0, TAU); c.fill(); c.stroke(); }
@@ -356,7 +357,7 @@
     // front ear, floppy
     c.strokeStyle = OUT; c.lineWidth = 3.4;
     const flop = Math.sin(t * 5) * 0.08 + (o.ears || 0);
-    c.save(); c.translate(-6, -22); c.rotate(0.25 + flop); c.fillStyle = BLK; for (let i = 0; i < 5; i++) { fluff(c, -4 + Math.sin(i * 1.3) * 2, i * 8, 11 - i * 0.6, 8, 8, 3); c.fill(); c.stroke(); } curls(c, -4, 16, 6, 14, 5, 'rgba(255,255,255,.15)', 3); c.restore();
+    c.save(); c.translate(-6, -22); c.rotate(0.25 + flop); c.fillStyle = EAR; c.strokeStyle = OUT; c.lineWidth = 3.4; for (let i = 0; i < 5; i++) { fluff(c, -4 + Math.sin(i * 1.3) * 2, i * 8, 11 - i * 0.6, 8, 8, 3); c.stroke(); } for (let i = 0; i < 5; i++) { fluff(c, -4 + Math.sin(i * 1.3) * 2, i * 8, 11 - i * 0.6, 8, 8, 3); c.fill(); } curls(c, -4, 16, 6, 14, 5, CURL, 3); c.restore();
     // a little shine on the head
     c.fillStyle = 'rgba(255,255,255,.12)'; c.beginPath(); c.ellipse(-4, -24, 10, 4, -0.3, 0, TAU); c.fill();
     c.restore();
@@ -367,7 +368,7 @@
     // tail curled round
     c.lineWidth = 3.4; c.strokeStyle = OUT; c.fillStyle = BLK; fluff(c, -bodyL / 2 - 6, -10, 14, 10, 9, 3.5); c.fill(); c.stroke();
     c.fillStyle = BLK; fluff(c, 0, -18 - br, bodyL / 2 + 4, 20 + br, 22, 4.5); c.fill(); c.stroke();
-    curls(c, -6, -22, bodyL / 2 - 8, 12, 14, 'rgba(255,255,255,.13)', 4);
+    curls(c, -6, -22, bodyL / 2 - 8, 12, 14, CURL, 4);
     c.save(); c.beginPath(); c.ellipse(0, -18 - br, bodyL / 2 + 2, 18 + br, 0, 0, TAU); c.clip(); c.fillStyle = WHT; c.beginPath(); c.ellipse(bodyL / 2 - 6, -8, 20, 16, 0, 0, TAU); c.fill(); c.restore();
     // paws out front
     c.fillStyle = BLK; rr(c, bodyL / 2 - 10, -12, 36, 12, 6); c.fill(); c.stroke(); c.fillStyle = WHT; rr(c, bodyL / 2 + 14, -12, 14, 12, 6); c.fill(); c.stroke();
