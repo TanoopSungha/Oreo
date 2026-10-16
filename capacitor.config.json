@@ -1,0 +1,8 @@
+{
+  "appId": "com.snoopster.oreo",
+  "appName": "Oreo",
+  "webDir": "www",
+  "backgroundColor": "#f7e3c0",
+  "android": { "allowMixedContent": false },
+  "ios": { "contentInset": "never" }
+}

@@ -1,0 +1,90 @@
+/* Oreo. A warm, soft look: honey, cream and paper. The stage is a fixed 1280x720 board, scaled to fit. */
+@font-face { font-family: "Fredoka"; src: url(assets/fonts/fredoka-latin-500-normal.woff2) format("woff2"); font-weight: 400 500; font-display: swap; }
+@font-face { font-family: "Fredoka"; src: url(assets/fonts/fredoka-latin-600-normal.woff2) format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Fredoka"; src: url(assets/fonts/fredoka-latin-700-normal.woff2) format("woff2"); font-weight: 700 900; font-display: swap; }
+@font-face { font-family: "Luckiest Guy"; src: url(assets/fonts/luckiest-guy-latin-400-normal.woff2) format("woff2"); font-display: swap; }
+:root { --ink: #3a2418; --cream: #fff8ec; --paper: #fbefd8; --honey: #f2a03b; --rose: #ff7aa0; --sage: #6cc05a; --sky: #7ec8ff;
+  --display: "Fredoka", "Trebuchet MS", system-ui, sans-serif; --logo: "Luckiest Guy", "Fredoka", Impact, sans-serif; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #2a1a10; color: var(--ink); font-family: var(--display); overflow: hidden; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+#frame { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(1200px 700px at 50% 40%, #5a3a20, #1a0f08); }
+#stage { position: relative; width: 1280px; height: 720px; transform-origin: center center; overflow: hidden; border-radius: 6px; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+#scene { position: absolute; inset: 0; display: block; touch-action: none; }
+#hud, #play, #toasts, #screen { position: absolute; inset: 0; pointer-events: none; }
+#hud > *, #play > *, #screen > * { pointer-events: auto; }
+button { font-family: var(--display); font-weight: 600; cursor: pointer; border: 3px solid var(--ink); border-radius: 18px; background: var(--honey); color: var(--ink); font-size: 19px; padding: 9px 20px; box-shadow: 0 4px 0 var(--ink); transition: transform .08s, box-shadow .08s, filter .1s; }
+button:hover { filter: brightness(1.07); }
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+button.ghost { background: var(--cream); } button.rose { background: var(--rose); color: #fff; } button.sage { background: var(--sage); color: #fff; }
+button.small { font-size: 14px; padding: 4px 10px; border-radius: 12px; box-shadow: 0 3px 0 var(--ink); }
+:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+h1, h2, h3 { margin: 0; }
+
+/* ---------- HUD ---------- */
+.day { position: absolute; left: 14px; top: 14px; background: var(--cream); border: 3px solid var(--ink); border-radius: 18px; padding: 6px 14px; box-shadow: 0 3px 0 var(--ink); line-height: 1.15; }
+.day b { font-size: 20px; } .day small { display: block; font-size: 13px; color: #8a5a3a; }
+.needs { position: absolute; left: 14px; top: 82px; display: flex; flex-direction: column; gap: 6px; }
+.need { display: flex; align-items: center; gap: 6px; font-size: 13px; background: rgba(255,248,236,.92); border: 3px solid var(--ink); border-radius: 14px; padding: 3px 8px; box-shadow: 0 2px 0 var(--ink); }
+.need .bar { width: 110px; height: 10px; border: 2px solid var(--ink); border-radius: 6px; background: #fff; overflow: hidden; }
+.need .bar i { display: block; height: 100%; transition: width .6s; }
+.topright { position: absolute; right: 14px; top: 14px; display: flex; gap: 8px; }
+.bond { background: var(--rose); color: #fff; border: 3px solid var(--ink); border-radius: 16px; padding: 6px 14px; font-weight: 700; box-shadow: 0 3px 0 var(--ink); }
+
+/* ---------- the story box ---------- */
+.story { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: 900px; min-height: 150px; background: var(--paper); border: 4px solid var(--ink); border-radius: 26px; box-shadow: 0 6px 0 var(--ink); padding: 16px 24px 16px 112px; }
+.story::before { content: ""; position: absolute; left: 20px; top: 18px; width: 76px; height: 76px; border-radius: 50%; border: 3px solid var(--ink); background: var(--cream) url() center/cover; }
+.story .face { position: absolute; left: 20px; top: 18px; width: 76px; height: 76px; border-radius: 50%; overflow: hidden; border: 3px solid var(--ink); background: #ffe7b0; }
+.story .who { font-weight: 700; color: #b0603a; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; }
+.story .txt { font-size: 21px; line-height: 1.35; margin: 2px 0 10px; min-height: 56px; }
+.story .opts { display: flex; gap: 10px; flex-wrap: wrap; }
+.story .act { display: flex; align-items: center; gap: 8px; }
+.story .act .ic { font-size: 22px; }
+.story .tap { font-size: 13px; color: #8a5a3a; }
+.toast { position: absolute; left: 50%; top: 86px; transform: translateX(-50%); background: var(--cream); border: 3px solid var(--ink); border-radius: 16px; padding: 8px 18px; font-size: 17px; box-shadow: 0 4px 0 var(--ink); animation: toast 3s forwards; white-space: nowrap; }
+.toast.rose { background: #ffd0de; } .toast.gold { background: #ffe8a8; }
+@keyframes toast { 0% { opacity: 0; transform: translate(-50%, -14px); } 10% { opacity: 1; transform: translate(-50%, 0); } 85% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---------- full screens ---------- */
+.panel { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 30px; animation: fade .4s; }
+.panel.dim { background: rgba(40,20,10,.5); }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.card { background: var(--cream); border: 4px solid var(--ink); border-radius: 26px; box-shadow: 0 6px 0 var(--ink); padding: 20px 26px; }
+.logo { text-align: center; }
+.logo .t1 { font-family: var(--logo); font-size: 170px; line-height: .9; letter-spacing: 4px; color: #fbf7ee; -webkit-text-stroke: 6px #1d1b22; text-shadow: 0 10px 0 #1d1b22; }
+.logo .t1 span { color: #1d1b22; -webkit-text-stroke: 6px #fbf7ee; text-shadow: 0 10px 0 #fbf7ee, 0 10px 18px rgba(0,0,0,.3); }
+.logo .sub { color: #fff; font-size: 22px; text-shadow: 0 2px 0 var(--ink), 0 0 12px rgba(0,0,0,.4); margin-top: 16px; }
+.row { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.credit { color: #fff; font-size: 13px; text-shadow: 0 1px 0 var(--ink); } .credit a { color: inherit; }
+.chapter .big { font-family: var(--logo); font-size: 100px; color: #fff; -webkit-text-stroke: 4px var(--ink); text-shadow: 0 8px 0 var(--ink); text-align: center; line-height: 1; }
+.chapter .small { color: #fff; font-size: 24px; text-align: center; text-shadow: 0 2px 0 var(--ink); }
+.album { display: grid; grid-template-columns: repeat(5, 200px); gap: 16px; max-height: 520px; overflow: auto; padding: 6px; }
+.polaroid { background: #fff; padding: 10px 10px 8px; border-radius: 4px; box-shadow: 0 6px 14px rgba(0,0,0,.3); transform: rotate(var(--r, 0deg)); text-align: center; font-size: 14px; }
+.polaroid .img { width: 180px; height: 110px; background: #e8dcc6 center/cover; border: 1px solid #d8c8a8; display: grid; place-items: center; font-size: 34px; color: #b8a888; }
+.polaroid b { display: block; margin-top: 6px; font-size: 15px; } .polaroid small { color: #8a6a4a; }
+.polaroid.lock { opacity: .55; }
+.finale-line { font-size: 30px; color: #fff; text-align: center; max-width: 900px; line-height: 1.35; text-shadow: 0 2px 0 rgba(40,20,10,.8), 0 0 18px rgba(40,20,10,.5); animation: fade 1.2s; }
+.slides { position: relative; width: 420px; height: 330px; }
+.slides .polaroid { position: absolute; left: 50%; top: 50%; width: 360px; margin-left: -180px; margin-top: -150px; animation: drop .8s cubic-bezier(.3,1.4,.6,1); }
+.slides .polaroid .img { width: 340px; height: 200px; }
+@keyframes drop { from { opacity: 0; transform: translateY(-60px) rotate(-12deg) scale(1.2); } to { opacity: 1; transform: rotate(var(--r)); } }
+
+/* ---------- little games ---------- */
+.mg { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.mg > * { pointer-events: auto; }
+.mg .title { font-family: var(--logo); font-size: 46px; color: #fff; -webkit-text-stroke: 2px var(--ink); text-shadow: 0 5px 0 var(--ink); }
+.mg .hint { color: #fff; font-size: 18px; text-shadow: 0 2px 0 var(--ink); background: rgba(58,36,24,.45); padding: 4px 14px; border-radius: 12px; }
+.mg .timer { width: 420px; height: 14px; border: 3px solid var(--ink); border-radius: 10px; background: #fff; overflow: hidden; }
+.mg .timer i { display: block; height: 100%; background: linear-gradient(90deg, var(--rose), var(--honey)); }
+.mg .score { font-family: var(--logo); font-size: 34px; color: #fff; -webkit-text-stroke: 2px var(--ink); }
+.bigbtns { position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); display: flex; gap: 14px; }
+.bigbtns button { font-size: 26px; padding: 14px 30px; border-radius: 22px; }
+.trickpad { display: flex; gap: 10px; }
+.trickpad button { width: 112px; height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 15px; }
+.trickpad button span { font-size: 34px; }
+.trickpad button.lit { background: #fff6a8; transform: scale(1.08); }
+
+/* ---------- intro video (same Snoopster intro as the other games) ---------- */
+#intro .intro { position: fixed; inset: 0; background: #000; display: grid; place-items: center; z-index: 100; transition: opacity .45s; }
+#intro .intro.fadeout { opacity: 0; }
+#intro video { width: 100%; height: 100%; object-fit: contain; }
+#intro .skip { position: absolute; bottom: 22px; left: 0; right: 0; text-align: center; color: #aaa; font-size: 13px; letter-spacing: .08em; }
