@@ -10,7 +10,7 @@
 
   const LAST_DAY = 40;
   const CHAPTERS = [
-    { id: 0, name: 'Little Oreo', from: 1, blurb: 'A rescue puppy with big paws and a bigger heart.', music: 'folk' },
+    { id: 0, name: 'Little Oreo', from: 1, blurb: 'A fluffy cockapoo puppy with big paws and an even bigger heart.', music: 'folk' },
     { id: 1, name: 'Zoomies', from: 10, blurb: 'Every day is the best day ever.', music: 'reggae' },
     { id: 2, name: 'Best friend', from: 20, blurb: 'The family is growing, and so is Oreo.', music: 'soul' },
     { id: 3, name: 'Old friend', from: 31, blurb: 'Slower walks. Longer naps. Just as much love.', music: 'jazz' },
@@ -36,10 +36,10 @@
 
   // Oreo's diary: one of these opens each ordinary day.
   const DIARY = [
-    ['The big people call me Oreo. I think it means "good boy". I hope so.', 'I found my tail today. It was behind me the whole time.', 'Mia smells like toast and happiness.', 'I barked at the hoover. The hoover did not apologise.', 'There is a dog in the oven door. He copies everything I do.', 'My paws are too big for me. Dad says I will "grow into them".'],
+    ['The big people call me Oreo. I think it means "good boy". I hope so.', 'Mum says I\'m a cockapoo: half cocker spaniel, half poodle, all trouble.', 'My fur is so curly that Dad lost a biscuit in it. I found it later. Lovely.', 'I found my tail today. It was behind me the whole time.', 'Mia smells like toast and happiness.', 'I barked at the hoover. The hoover did not apologise.', 'There is a dog in the oven door. He copies everything I do.', 'My paws are too big for me. Dad says I will "grow into them".'],
     ['Today I ran round the garden eleven times for no reason. It was brilliant.', 'The postman came. I protected everyone. You\'re welcome.', 'I can hear the cheese drawer from three rooms away.', 'Mia taught me a new word: "walkies". Best word.', 'A squirrel looked at me. I will never forgive it.', 'I helped Dad with the garden. He says I dug "the wrong hole".'],
     ['When Mia is happy, I\'m happy. When she\'s sad, I sit really close.', 'Leo shares his biscuits with me. Leo is my favourite. Don\'t tell Mia.', 'Mum pretends she doesn\'t let me on the sofa. She does.', 'I know everyone\'s footsteps now. Even Grandad Ted\'s slow shuffle.', 'I am very good at waiting by the door.', 'Dad and I watched the football. We both shouted at it.'],
-    ['My legs are a bit stiff in the mornings now. The sun on the rug helps.', 'I don\'t run after the ball much any more. I watch it, and I remember.', 'Leo carries my ball for me now. He says I taught him how.', 'I sleep a lot more. I dream about the park.', 'My muzzle has gone grey. Mia says it makes me look wise.', 'Every day is still a good day. Some are just slower.'],
+    ['My legs are a bit stiff in the mornings now. The sun on the rug helps.', 'I don\'t run after the ball much any more. I watch it, and I remember.', 'Leo carries my ball for me now. He says I taught him how.', 'I sleep a lot more. I dream about the park.', 'My curls have gone grey round my nose. Mia says it makes me look wise.', 'Every day is still a good day. Some are just slower.'],
   ];
 
   // Things to do. Each day you get to pick two.
@@ -63,7 +63,7 @@
   // The big moments of a life. Each has a place, what happens, and how Oreo can respond.
   // Every choice is a kind one: they just make different memories.
   const EVENTS = {
-    1: { place: 'home', who: ['mia', 'mum'], text: 'A box. A blanket. A big new smell. The small human is called Mia. She\'s looking at me like I\'m the best thing she\'s ever seen.',
+    1: { place: 'home', who: ['mia', 'mum'], text: 'A box. A blanket. A big new smell. I\'m a very small, very fluffy cockapoo. The small human is called Mia. She\'s looking at me like I\'m the best thing she\'s ever seen.',
       opts: [{ label: 'Sniff her hand', reply: 'She giggled. Her hand smelled of toast. I decided to stay forever.', memory: 'First hello' },
         { label: 'Hide behind the sofa', reply: 'Mia lay on the floor and waited. After a while, I came out. She was still there. She\'s always still there.', memory: 'Brave enough' }] },
     2: { place: 'night', who: ['mia'], text: 'My first night. It\'s dark and quiet and I miss my brothers and sisters.',

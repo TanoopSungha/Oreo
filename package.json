@@ -2,7 +2,7 @@
   "name": "oreo",
   "productName": "Oreo",
   "version": "1.0.0",
-  "description": "A gentle, heartfelt game about the life of a dog called Oreo: from a nervous rescue puppy to a grey-muzzled old friend.",
+  "description": "A gentle, heartfelt game about the life of a cockapoo called Oreo: from a fluffy puppy to a grey-muzzled old friend.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

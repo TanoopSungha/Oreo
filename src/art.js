@@ -240,7 +240,27 @@
 
 
 
-  // ---------- Oreo ----------
+  // ---------- Oreo, a black-and-white cockapoo ----------
+  // A scalloped "fluffy" ellipse: the curly cockapoo coat.
+  function fluff(c, cx, cy, rx, ry, n, amp, rot) {
+    n = n || 18; amp = amp || 4; rot = rot || 0;
+    c.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const a0 = rot + (i / n) * TAU, a1 = rot + ((i + 0.5) / n) * TAU, a2 = rot + ((i + 1) / n) * TAU;
+      const p = a => [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry];
+      const [x0, y0] = p(a0), [x2, y2] = p(a2);
+      const bx = cx + Math.cos(a1) * (rx + amp), by = cy + Math.sin(a1) * (ry + amp);
+      if (i === 0) c.moveTo(x0, y0); else c.quadraticCurveTo(bx, by, x2, y2);
+    }
+    c.closePath();
+  }
+  // little curls drawn over the black fur
+  function curls(c, cx, cy, rx, ry, n, col, seed) {
+    c.save(); c.strokeStyle = col; c.lineWidth = 2; c.lineCap = 'round';
+    for (let i = 0; i < n; i++) { const a = (i * 2.399 + (seed || 0)), r = Math.sqrt((i + 0.5) / n); const x = cx + Math.cos(a) * rx * r * 0.85, y = cy + Math.sin(a) * ry * r * 0.85; c.beginPath(); c.arc(x, y, 3.2, a, a + 3.6); c.stroke(); }
+    c.restore();
+  }
+
   // Side view, facing right, origin at the ground between the paws.
   // o: { pose: 'stand'|'walk'|'run'|'sit'|'lie'|'jump'|'beg'|'roll'|'sleep', phase, wag, age 0..1 (0 puppy, 1 old), blink, tongue, flip, look }
   function dog(c, x, y, s, o) {
@@ -265,11 +285,11 @@
     // tail
     const wag = o.wag != null ? o.wag : Math.sin(t * (12 - age * 6)) * 0.6;
     c.save(); c.translate(-bodyL / 2 + 4, sit ? -26 : -legH - 26); c.rotate(-0.9 + wag * 0.6 + (sit ? 0.9 : 0));
-    c.lineWidth = 12; c.strokeStyle = OUT; c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(-18, -16, -28, -36); c.stroke();
-    c.lineWidth = 7; c.strokeStyle = BLK; c.stroke(); c.strokeStyle = WHT; c.beginPath(); c.moveTo(-24, -30); c.lineTo(-28, -36); c.stroke();
+    c.lineWidth = 3.4; c.strokeStyle = OUT; c.fillStyle = BLK; fluff(c, -12, -20, 11, 22, 10, 4, 0.3); c.fill(); c.stroke();
+    c.fillStyle = WHT; fluff(c, -18, -36, 7, 7, 7, 3); c.fill(); c.stroke();
     c.restore(); c.lineWidth = 3.4; c.strokeStyle = OUT;
     // back legs
-    const leg = (lx, ly, ang, col, sock) => { c.save(); c.translate(lx, ly); c.rotate(ang); c.fillStyle = col; rr(c, -7, 0, 14, legH + 2, 7); c.fill(); c.stroke(); if (sock) { c.fillStyle = WHT; rr(c, -7, legH - 10, 14, 12, 6); c.fill(); c.stroke(); } c.restore(); };
+    const leg = (lx, ly, ang, col, sock) => { c.save(); c.translate(lx, ly); c.rotate(ang); c.fillStyle = col; rr(c, -8.5, 0, 17, legH + 2, 8); c.fill(); c.stroke(); if (sock) { c.fillStyle = WHT; fluff(c, 0, legH - 3, 10, 7, 8, 2.5); c.fill(); c.stroke(); } c.restore(); };
     if (sit) {
       c.fillStyle = BLK; c.beginPath(); c.ellipse(-bodyL / 2 + 16, -18, 24, 18, 0, 0, TAU); c.fill(); c.stroke();
       c.fillStyle = WHT; rr(c, -bodyL / 2 + 22, -8, 24, 10, 5); c.fill(); c.stroke();
@@ -280,7 +300,8 @@
     }
     // body
     c.save(); if (sit) { c.translate(-6, -legH - 6); c.rotate(-0.85); c.translate(6, legH + 6); }
-    c.fillStyle = BLK; c.beginPath(); c.ellipse(0, -legH - 18, bodyL / 2, 22 - pup * 2, 0, 0, TAU); c.fill(); c.stroke();
+    c.fillStyle = BLK; fluff(c, 0, -legH - 18, bodyL / 2, 22 - pup * 2, 22, 4.5); c.fill(); c.stroke();
+    curls(c, -6, -legH - 22, bodyL / 2 - 10, 14, 14, 'rgba(255,255,255,.13)', 1);
     // white chest and belly
     c.save(); c.beginPath(); c.ellipse(0, -legH - 18, bodyL / 2 - 2, 20 - pup * 2, 0, 0, TAU); c.clip();
     c.fillStyle = WHT; c.beginPath(); c.ellipse(bodyL / 2 - 8, -legH - 10, 22, 22, 0, 0, TAU); c.fill(); c.beginPath(); c.ellipse(4, -legH - 2, bodyL / 2 - 10, 9, 0, 0, TAU); c.fill();
@@ -301,15 +322,19 @@
 
   function dogHead(c, hx, hy, k, o, BLK, WHT, GREY, t, old) {
     c.save(); c.translate(hx, hy); c.scale(k, k); c.rotate(o.tilt || Math.sin(t * 0.7) * 0.04);
-    // back ear
-    c.fillStyle = shade(BLK, 0.1); c.beginPath(); c.ellipse(-12, -6, 10, 20, 0.5, 0, TAU); c.fill(); c.stroke();
-    // head
-    c.fillStyle = BLK; c.beginPath(); c.ellipse(0, -10, 24, 22, 0, 0, TAU); c.fill(); c.stroke();
+    // back ear (long and curly)
+    c.fillStyle = shade(BLK, 0.1); for (let i = 0; i < 4; i++) { fluff(c, -14 - i * 1.5, -8 + i * 9, 10 - i, 8, 8, 2.5); c.fill(); c.stroke(); }
+    // head: round and fluffy, with a curly top-knot
+    c.fillStyle = BLK; fluff(c, 0, -10, 25, 23, 16, 4); c.fill(); c.stroke();
+    fluff(c, 0, -32, 13, 8, 9, 3.5); c.fill(); c.stroke();
+    curls(c, -2, -20, 18, 12, 9, 'rgba(255,255,255,.14)', 2);
     // white blaze down the face and a white muzzle
     c.save(); c.beginPath(); c.ellipse(0, -10, 23, 21, 0, 0, TAU); c.clip();
     c.fillStyle = WHT; c.beginPath(); c.moveTo(6, -34); c.quadraticCurveTo(14, -20, 16, -4); c.lineTo(4, -2); c.quadraticCurveTo(2, -20, 6, -34); c.fill();
     c.restore();
-    c.fillStyle = old > 0 ? shade(WHT, -0.06) : WHT; c.beginPath(); c.ellipse(20, -2, 17, 12, 0.1, 0, TAU); c.fill(); c.stroke();
+    c.fillStyle = old > 0 ? shade(WHT, -0.06) : WHT; fluff(c, 18, -1, 15, 12, 12, 3); c.fill(); c.stroke();
+    // a fluffy white beard under the chin
+    fluff(c, 14, 10, 10, 6, 8, 3); c.fill(); c.stroke();
     if (old > 0) { c.fillStyle = `rgba(200,200,205,${0.9 * old})`; c.beginPath(); c.ellipse(4, -16, 12, 8, 0, 0, TAU); c.fill(); c.beginPath(); c.ellipse(16, -24, 7, 4, 0.4, 0, TAU); c.fill(); c.beginPath(); c.ellipse(-10, -2, 8, 10, 0, 0, TAU); c.fill(); }
     // eye
     const ey = -14, ex = 8;
@@ -323,15 +348,15 @@
       c.fillStyle = '#b08a6a'; c.beginPath(); c.ellipse(ex - 2, ey - 11, 4, 2.5, -0.3, 0, TAU); c.fill();
     }
     // nose and mouth
-    c.fillStyle = '#111'; c.beginPath(); c.ellipse(36, -8, 6, 5, 0, 0, TAU); c.fill();
-    c.fillStyle = 'rgba(255,255,255,.5)'; c.beginPath(); c.arc(35, -10, 1.6, 0, TAU); c.fill();
-    c.strokeStyle = OUT; c.lineWidth = 2.6; c.beginPath(); c.moveTo(34, -2); c.quadraticCurveTo(30, 6, 22, 4); c.stroke();
-    if (o.tongue) { c.fillStyle = '#ff7aa0'; c.beginPath(); c.ellipse(26, 9 + Math.sin(t * 10) * 1.5, 5, 8, 0.2, 0, TAU); c.fill(); c.stroke(); }
+    c.fillStyle = '#111'; c.beginPath(); c.ellipse(31, -6, 6, 5, 0, 0, TAU); c.fill();
+    c.fillStyle = 'rgba(255,255,255,.5)'; c.beginPath(); c.arc(30, -8, 1.6, 0, TAU); c.fill();
+    c.strokeStyle = OUT; c.lineWidth = 2.6; c.beginPath(); c.moveTo(30, 0); c.quadraticCurveTo(27, 6, 20, 4); c.stroke();
+    if (o.tongue) { c.fillStyle = '#ff7aa0'; c.beginPath(); c.ellipse(23, 9 + Math.sin(t * 10) * 1.5, 5, 8, 0.2, 0, TAU); c.fill(); c.stroke(); }
     if (o.ball) { c.fillStyle = '#c6f03a'; c.beginPath(); c.arc(34, 6, 9, 0, TAU); c.fill(); c.stroke(); c.strokeStyle = '#fff'; c.lineWidth = 2; c.beginPath(); c.arc(30, 6, 7, -0.8, 0.8); c.stroke(); }
     // front ear, floppy
     c.strokeStyle = OUT; c.lineWidth = 3.4;
     const flop = Math.sin(t * 5) * 0.08 + (o.ears || 0);
-    c.save(); c.translate(-4, -26); c.rotate(0.35 + flop); c.fillStyle = BLK; c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(-18, 6, -12, 32); c.quadraticCurveTo(-2, 30, 8, 4); c.closePath(); c.fill(); c.stroke(); c.restore();
+    c.save(); c.translate(-6, -22); c.rotate(0.25 + flop); c.fillStyle = BLK; for (let i = 0; i < 5; i++) { fluff(c, -4 + Math.sin(i * 1.3) * 2, i * 8, 11 - i * 0.6, 8, 8, 3); c.fill(); c.stroke(); } curls(c, -4, 16, 6, 14, 5, 'rgba(255,255,255,.15)', 3); c.restore();
     // a little shine on the head
     c.fillStyle = 'rgba(255,255,255,.12)'; c.beginPath(); c.ellipse(-4, -24, 10, 4, -0.3, 0, TAU); c.fill();
     c.restore();
@@ -340,9 +365,9 @@
   function lying(c, o, BLK, WHT, GREY, headK, bodyL, asleep, t, old) {
     const br = asleep ? Math.sin(t * 1.6) * 1.5 : 0;
     // tail curled round
-    c.lineWidth = 10; c.strokeStyle = OUT; c.beginPath(); c.moveTo(-bodyL / 2 + 6, -12); c.quadraticCurveTo(-bodyL / 2 - 20, -4, -bodyL / 2 - 8, 2); c.stroke();
-    c.lineWidth = 6; c.strokeStyle = BLK; c.stroke(); c.lineWidth = 3.4; c.strokeStyle = OUT;
-    c.fillStyle = BLK; c.beginPath(); c.ellipse(0, -18 - br, bodyL / 2 + 4, 20 + br, 0, 0, TAU); c.fill(); c.stroke();
+    c.lineWidth = 3.4; c.strokeStyle = OUT; c.fillStyle = BLK; fluff(c, -bodyL / 2 - 6, -10, 14, 10, 9, 3.5); c.fill(); c.stroke();
+    c.fillStyle = BLK; fluff(c, 0, -18 - br, bodyL / 2 + 4, 20 + br, 22, 4.5); c.fill(); c.stroke();
+    curls(c, -6, -22, bodyL / 2 - 8, 12, 14, 'rgba(255,255,255,.13)', 4);
     c.save(); c.beginPath(); c.ellipse(0, -18 - br, bodyL / 2 + 2, 18 + br, 0, 0, TAU); c.clip(); c.fillStyle = WHT; c.beginPath(); c.ellipse(bodyL / 2 - 6, -8, 20, 16, 0, 0, TAU); c.fill(); c.restore();
     // paws out front
     c.fillStyle = BLK; rr(c, bodyL / 2 - 10, -12, 36, 12, 6); c.fill(); c.stroke(); c.fillStyle = WHT; rr(c, bodyL / 2 + 14, -12, 14, 12, 6); c.fill(); c.stroke();

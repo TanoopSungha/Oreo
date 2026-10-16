@@ -76,7 +76,7 @@
     Object.assign(view, { place: 'sunset', tod: 'evening', family: [] }); view.dog = { x: 640, tx: 640, pose: 'sit', tongue: true };
     const saved = E.load();
     screen.innerHTML = `<div class="panel" style="justify-content:flex-start;padding-top:50px">
-      <div class="logo"><div class="t1">OR<span>EO</span></div><div class="sub">The life of one very good dog.</div></div>
+      <div class="logo"><div class="t1">OR<span>EO</span></div><div class="sub">The life of one very good cockapoo.</div></div>
       <div style="flex:1"></div>
       <div class="row">${saved && saved.phase !== 'finale' ? `<button class="sage" data-a="continue">Carry on (day ${Math.min(saved.day, D.LAST_DAY)})</button>` : ''}
         <button class="rose" data-a="new">${saved ? 'Start a new life' : 'Bring Oreo home'}</button>
