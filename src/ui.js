@@ -66,9 +66,25 @@
   function buildHud() {
     if (!S) { hud.innerHTML = ''; return; }
     const ch = D.CHAPTERS[chapter()];
+    const wagLbl = S.happy >= 85 ? '🐕 Zoomies!' : S.happy >= 60 ? '🐾 Tail wagging' : S.happy >= 35 ? '🐶 Curious pup' : '🥺 Needs cuddles';
     hud.innerHTML = `<div class="day"><b>Day ${Math.min(S.day, D.LAST_DAY)}</b><small>${esc(ch.name)}</small></div>
-      <div class="needs">${[['🍖', 'Tummy', 'tummy', '#f2a03b'], ['⚡', 'Energy', 'energy', '#7ec8ff'], ['😊', 'Happy', 'happy', '#ff7aa0']].map(([i, n, k, col]) => `<div class="need">${i}<div class="bar"><i style="width:${S[k]}%;background:${col}"></i></div></div>`).join('')}</div>
-      <div class="topright"><div class="bond">❤️ ${S.bond}</div><button class="small ghost" data-a="album">📷 ${S.memories.length}</button><button class="small ghost" data-a="mute">${AU.muted ? '🔇' : '🔊'}</button></div>`;
+      <div class="needs">${[['🍖', 'Tummy', 'tummy', '#f2a03b'], ['⚡', 'Energy', 'energy', '#7ec8ff'], ['😊', 'Happy', 'happy', '#ff7aa0']].map(([i, n, k, col]) => `<div class="need" title="${n}: ${Math.round(S[k])}%">${i}<div class="bar"><i style="width:${S[k]}%;background:${col}"></i></div></div>`).join('')}</div>
+      <div class="topright"><div class="wagpill">${wagLbl}</div><button class="small honey" data-a="treat" title="Toss Oreo a biscuit (T)">🦴 Treat</button><div class="bond">❤️ ${S.bond}</div><button class="small ghost" data-a="album">📷 ${S.memories.length}</button><button class="small ghost" data-a="mute">${AU.muted ? '🔇' : '🔊'}</button></div>`;
+  }
+  function tossTreat() {
+    if (!S || mode === 'finale') return;
+    AU.init(); AU.sfx('crunch');
+    const dx = view.dog.x;
+    for (let i = 0; i < 4; i++) parts.push({ x: dx + 40 + (Math.random() - 0.5) * 40, y: GROUND - 150, vx: (Math.random() - 0.5) * 70, vy: -90 - Math.random() * 60, life: 1.3, e: i === 0 ? '🦴' : '✨', s: 22 + Math.random() * 10 });
+    hearts(dx + 30, GROUND - 110, 5);
+    S.tummy = Math.min(100, S.tummy + 6);
+    S.happy = Math.min(100, S.happy + 5);
+    S.bond += 1;
+    const prev = view.dog.pose;
+    view.dog.pose = 'jump'; view.dog.tongue = true;
+    setTimeout(() => { if (view.dog) view.dog.pose = 'bow'; }, 350);
+    setTimeout(() => { if (view.dog && (view.dog.pose === 'bow' || view.dog.pose === 'jump')) view.dog.pose = prev === 'sleep' ? 'sit' : prev; }, 950);
+    E.save(S); buildHud();
   }
 
   // ---------- screens ----------
@@ -375,7 +391,12 @@
       A.dog(c, d.x + 150, GROUND + 4, 1.35, { pose: 'bow', age: 0, t: t + 1.4, tongue: true, flip: true, coat: '#8c5830', earCol: '#5e3818', collar: '#39d0b8', blink: ((t + 1.1) % 3.4) < 0.12 });
     }
     if (mode === 'title') { A.dog(c, 640, GROUND + 40, 2.2, { pose: d.pose || 'sit', age: 0.35, t, tongue: true, blink: (t % 3.5) < 0.12, look: Math.sin(t * 0.7) }); }
-    else A.dog(c, d.x, GROUND + 4, 1.45, { pose: d.pose, phase: d.phase || t * 8, age: d.age != null ? d.age : age(), t, tongue: d.tongue, flip: d.flip, ball: d.ball, wag: d.wag, blink: d.sleepy || (t % 3.7) < 0.12, sleepy: d.sleepy, look: d.look });
+    else {
+      if ((d.pose === 'run' || d.pose === 'walk' || d.pose === 'bow') && Math.random() < 0.14) {
+        parts.push({ x: d.x - 24 + (Math.random() - 0.5) * 16, y: GROUND + 2, vx: -20, vy: -12, life: 0.75, e: d.pose === 'bow' ? '✨' : '🐾', s: 15, g: 5 });
+      }
+      A.dog(c, d.x, GROUND + 4, 1.45, { pose: d.pose, phase: d.phase || t * 8, age: d.age != null ? d.age : age(), t, tongue: d.tongue, flip: d.flip, ball: d.ball, wag: d.wag, blink: d.sleepy || (t % 3.7) < 0.12, sleepy: d.sleepy, look: d.look });
+    }
     if (mg && mg.id === 'nap') mg.draw();
     for (const p of parts) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.g || 20) * dt; p.life -= dt; c.globalAlpha = Math.max(0, Math.min(1, p.life)); c.font = p.s + 'px sans-serif'; c.textAlign = 'center'; c.fillText(p.e, p.x, p.y); }
     c.globalAlpha = 1; parts = parts.filter(p => p.life > 0);
@@ -424,6 +445,7 @@
       case 'new': newLife(); break;
       case 'continue': resume(); break;
       case 'album': showAlbum(); break;
+      case 'treat': tossTreat(); break;
       case 'closealbum': if (albumBack === 'title' || !S) showTitle(); else { mode = albumBack; screen.innerHTML = ''; if (albumBack === 'finale' || !S.phase || S.phase === 'finale') epilogue(); } break;
       case 'title': showTitle(); break;
       case 'intro': ev.preventDefault(); AU.stop(); playIntro(showTitle); break;
@@ -439,6 +461,7 @@
       if (mb) mb.textContent = AU.muted ? '🔇' : '🔊';
       return;
     }
+    if ((ev.key === 't' || ev.key === 'T') && S && !mg) { tossTreat(); return; }
     if (!mg) {
       if (ev.key >= '1' && ev.key <= '6') {
         const b = play.querySelector(`.story [data-opt="${+ev.key - 1}"]:not([disabled])`);

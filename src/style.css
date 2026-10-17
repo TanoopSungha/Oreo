@@ -27,7 +27,9 @@ h1, h2, h3 { margin: 0; }
 .need { display: flex; align-items: center; gap: 6px; font-size: 13px; background: rgba(255,248,236,.92); border: 3px solid var(--ink); border-radius: 14px; padding: 3px 8px; box-shadow: 0 2px 0 var(--ink); }
 .need .bar { width: 110px; height: 10px; border: 2px solid var(--ink); border-radius: 6px; background: #fff; overflow: hidden; }
 .need .bar i { display: block; height: 100%; transition: width .6s; }
-.topright { position: absolute; right: 14px; top: 14px; display: flex; gap: 8px; }
+.topright { position: absolute; right: 14px; top: 14px; display: flex; gap: 8px; align-items: center; }
+.wagpill { background: var(--cream); border: 3px solid var(--ink); border-radius: 16px; padding: 5px 12px; font-weight: 700; font-size: 14px; box-shadow: 0 3px 0 var(--ink); }
+button.honey { background: var(--honey); color: var(--ink); }
 .bond { background: var(--rose); color: #fff; border: 3px solid var(--ink); border-radius: 16px; padding: 6px 14px; font-weight: 700; box-shadow: 0 3px 0 var(--ink); }
 
 /* ---------- the story box ---------- */
