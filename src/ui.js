@@ -55,6 +55,7 @@
     fc.fillStyle = '#ffe7b0'; fc.fillRect(0, 0, 76, 76);
     if (who === 'Oreo' || !opts.look) A.dog(fc, 20, 98, 0.9, { pose: 'sit', age: age(), t: 0, tongue: true }); else A.person(fc, opts.look, 38, 130, 0.42, { face: 'happy', t: 0 });
     f.style.width = '76px'; f.style.height = '76px'; box.querySelector('.face').appendChild(f);
+    if (AU.speak && text) AU.speak(text, { id: who.toLowerCase(), age: age() });
     const el = box.querySelector('.txt'); let i = 0;
     typer = setInterval(() => { i += 2; el.textContent = text.slice(0, i); if (i >= text.length) clearInterval(typer); }, 18);
     box.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { AU.init(); clearInterval(typer); el.textContent = text; buttons[+b.dataset.opt].go(); });
@@ -73,7 +74,7 @@
   // ---------- screens ----------
   function showTitle() {
     mode = 'title'; play.innerHTML = ''; hud.innerHTML = ''; S = null;
-    Object.assign(view, { place: 'sunset', tod: 'evening', family: [] }); view.dog = { x: 640, tx: 640, pose: 'sit', tongue: true };
+    Object.assign(view, { place: 'sunset', tod: 'evening', family: [], extra: null }); view.dog = { x: 640, tx: 640, pose: 'sit', tongue: true };
     const saved = E.load();
     screen.innerHTML = `<div class="panel" style="justify-content:flex-start;padding-top:50px">
       <div class="logo"><div class="t1">OR<span>EO</span></div><div class="sub">The life of one very good cockapoo.</div></div>
@@ -124,6 +125,7 @@
     const ev = D.EVENTS[S.day];
     view.place = ev.place; view.tod = ev.place === 'night' ? 'night' : 'day';
     setFamily(ev.who);
+    view.extra = S.day === 37 ? 'pickle' : null;
     view.dog = { x: 470, tx: 470, pose: ev.place === 'night' ? 'lie' : 'sit', tongue: false, look: 1 };
     story('Oreo', ev.text, ev.opts.map((o, i) => ({ label: o.label, cls: i ? 'ghost' : 'rose', go: () => chooseEvent(i) })));
   }
@@ -146,6 +148,7 @@
   function morning() {
     mode = 'day'; S.phase = 'morning';
     view.place = chapter() === 3 ? 'garden' : 'home'; view.tod = 'morning';
+    view.extra = S.day >= 37 ? 'pickle' : null;
     setFamily(chapter() >= 2 ? ['mia', 'leo'] : ['mia']);
     view.dog = { x: 480, tx: 480, pose: S.energy < 25 ? 'lie' : 'sit', tongue: true };
     const done = Object.keys(S.did).length;
@@ -156,7 +159,7 @@
   // ---------- the little games ----------
   function startActivity(id) {
     mode = 'game'; play.innerHTML = '';
-    const a = D.ACTIVITIES[id]; view.place = a.place; view.tod = 'day'; view.family = [];
+    const a = D.ACTIVITIES[id]; view.place = a.place; view.tod = 'day'; view.family = []; view.extra = null;
     GAMES[id]();
   }
   function endActivity(id, score, line) {
@@ -197,7 +200,7 @@
           for (const it of items) drawWalkItem(it);
         },
         done() { endActivity('walk', total ? (sniffs + hops) / total : 0.5, sniffs + hops >= total * 0.8 ? 'Best. Walk. Ever. Oreo sniffed every lamppost in the postcode.' : 'A lovely walk, a few muddy paws, and one very happy dog.'); },
-        sniff() { const it = items.find(i => i.kind !== 'puddle' && !i.done && Math.abs(i.x - (view.dog.x + 60)) < 70); if (it) { it.done = true; sniffs++; AU.sfx('heart'); hearts(it.x, GROUND - 80, 3); } else AU.sfx('click'); },
+        sniff() { const it = items.find(i => i.kind !== 'puddle' && !i.done && Math.abs(i.x - (view.dog.x + 60)) < 70); if (it) { it.done = true; sniffs++; AU.sfx('sniff'); AU.sfx('heart'); hearts(it.x, GROUND - 80, 3); } else AU.sfx('sniff'); },
         hop() { jumpT = this.t; AU.sfx('click'); } };
       bigButtons([{ label: '👃 Sniff', go: () => mg && mg.sniff() }, { label: '🐾 Hop', cls: 'ghost', go: () => mg && mg.hop() }]);
     },
@@ -214,7 +217,7 @@
             ball.t += dt; ball.x = ball.x0 + ball.vx * ball.t; ball.y = ball.y0 - ball.vy * ball.t + 500 * ball.t * ball.t;
             view.dog.tx = Math.min(W - 80, ball.land - 30); view.dog.pose = Math.abs(view.dog.x - view.dog.tx) > 6 ? 'run' : 'sit'; view.dog.phase = (view.dog.phase || 0) + dt * 16;
             const near = Math.abs(ball.x - (view.dog.x + 50)) < 70 && ball.y > GROUND - 190 && ball.y < GROUND - 60 && ball.t > 0.4;
-            if (near && this.t - jumpT < 0.35 && !ball.caught) { ball.caught = true; catches++; AU.sfx('legend'); hearts(view.dog.x + 40, GROUND - 160, 8); }
+            if (near && this.t - jumpT < 0.35 && !ball.caught) { ball.caught = true; catches++; AU.sfx('bark', age()); AU.sfx('legend'); hearts(view.dog.x + 40, GROUND - 160, 8); }
             if (ball.caught) { ball.x = view.dog.x + 64; ball.y = GROUND - 90; view.dog.ball = true; }
             if (ball.y >= GROUND - 10 && !ball.caught) { ball.y = GROUND - 10; ball.vx = 0; ball.vy = 0; ball.x0 = ball.x; ball.y0 = ball.y; ball.t = 0; ball.landed = true; }
             if ((ball.caught || ball.landed) && Math.abs(view.dog.x - view.dog.tx) < 8) { ball.done = (ball.done || 0) + dt; if (ball.done > 0.9) { ball = null; view.dog.ball = false; view.dog.tx = 300; throws++; if (throws >= 3) setTimeout(() => this.done(), 600); } }
@@ -249,8 +252,8 @@
       seq.pop(); show();
       pad.onclick = ev => { const b = ev.target.closest('[data-tr]'); if (!b || showing || !mg) return; const id = b.dataset.tr;
         view.dog.pose = poseFor(id); setTimeout(() => { if (view.dog) view.dog.pose = 'sit'; }, 600);
-        if (id === seq[pos]) { pos++; AU.sfx('heart'); if (pos === seq.length) { round++; score = round / 3; hearts(view.dog.x + 30, GROUND - 120, 4); if (round >= 3) setTimeout(() => mg && mg.done(true), 500); else setTimeout(show, 700); } }
-        else { AU.sfx('fail'); setTimeout(() => mg && mg.done(false), 500); } };
+        if (id === seq[pos]) { pos++; AU.sfx('bark', age()); AU.sfx('heart'); if (pos === seq.length) { round++; score = round / 3; hearts(view.dog.x + 30, GROUND - 120, 4); if (round >= 3) setTimeout(() => mg && mg.done(true), 500); else setTimeout(show, 700); } }
+        else { AU.sfx('whine'); setTimeout(() => mg && mg.done(false), 500); } };
     },
     cuddle() {
       const box = hud2('Sofa cuddles', 'Stroke Oreo (drag across him) to fill his heart.', 9);
@@ -260,7 +263,7 @@
       mg = { id: 'cuddle', t: 0, len: 9, box,
         tick() { box.querySelector('.score').textContent = '❤️'.repeat(Math.round(love / 20)) || '🤍'; view.dog.wag = Math.sin(this.t * (6 + love / 8)) * (0.3 + love / 150); view.dog.sleepy = love > 70; },
         stroke(x, y) { if (Math.abs(x - (view.dog.x + 10)) < 110 && y > GROUND - 120 && y < GROUND + 10) { if (lastX != null && Math.abs(x - lastX) > 2) { love = Math.min(100, love + Math.abs(x - lastX) * 0.06); if (Math.random() < 0.08) hearts(x, y - 30, 1); } lastX = x; } },
-        done() { endActivity('cuddle', love / 100, love > 90 ? 'Oreo melted into the sofa like a happy puddle. Total bliss.' : 'Lovely cuddles. Oreo did that little sigh dogs do when everything is right.'); } };
+        done() { AU.sfx('sigh'); endActivity('cuddle', love / 100, love > 90 ? 'Oreo melted into the sofa like a happy puddle. Total bliss.' : 'Lovely cuddles. Oreo did that little sigh dogs do when everything is right.'); } };
     },
     nap() {
       const box = hud2('Nap in the sun', 'Shh. Oreo is dreaming. Tap when you want to wake him.', 0);
@@ -301,7 +304,7 @@
     view.place = 'home'; view.tod = 'evening'; setFamily(chapter() >= 2 ? ['mum', 'dad', 'leo'] : ['mum', 'dad']);
     view.dog = { x: 420, tx: 420, pose: 'beg', tongue: true }; view.extra = 'bowl';
     story('Oreo', 'The best sound in the world: the biscuit tin. It\'s dinner time!', [{ label: '🥣 Fill the bowl', cls: 'rose', go: () => {
-      E.dinner(S); buildHud(); AU.sfx('cash'); view.dog.pose = 'stand'; view.bowlFull = 2.5;
+      E.dinner(S); buildHud(); AU.sfx('crunch'); view.dog.pose = 'stand'; view.bowlFull = 2.5;
       setTimeout(() => bedtime(), 1800);
       story('Oreo', 'Crunch crunch crunch crunch. Gone in eleven seconds. A new record.', []);
     } }]);
@@ -347,7 +350,7 @@
   }
   function epilogue() {
     meta = E.finish(meta, S); E.saveMeta(meta);
-    view.dog = { x: 520, tx: 520, pose: 'run', tongue: true, age: 0 }; view.family = []; view.place = 'garden'; view.tod = 'day';
+    view.dog = { x: 460, tx: 460, pose: 'run', tongue: true, age: 0 }; view.family = []; view.place = 'garden'; view.tod = 'day'; view.extra = 'pickle';
     screen.innerHTML = `<div class="panel dim"><div class="card" style="max-width:760px;text-align:center"><h2 style="font-family:var(--logo);font-weight:400;font-size:44px">Thank you, Oreo</h2>
       <p style="font-size:19px;line-height:1.45">${esc(D.FINALE.epilogue)}</p>
       <p>${S.memories.length} memories · ${S.tricks.length} tricks learned · ❤️ ${S.bond} love</p>
@@ -359,6 +362,7 @@
   function draw(dt) {
     c.clearRect(0, 0, W, H);
     c.drawImage(A.place(W, H, view.place, view.tod), 0, 0);
+    if (A.placeFx) A.placeFx(c, W, H, view.place, view.tod, t);
     // falling leaves / snow / fireflies for atmosphere
     ambient(dt);
     const d = view.dog;
@@ -367,7 +371,10 @@
     if (view.extra === 'bowl') { const bx = d.x + 110; c.fillStyle = '#e5203a'; c.strokeStyle = '#3a2418'; c.lineWidth = 3; c.beginPath(); c.ellipse(bx, GROUND - 6, 40, 14, 0, 0, Math.PI * 2); c.fill(); c.stroke(); if (view.bowlFull > 0) { c.fillStyle = '#a8703a'; c.beginPath(); c.ellipse(bx, GROUND - 12, 30, 8, 0, 0, Math.PI * 2); c.fill(); view.bowlFull -= dt; } c.fillStyle = '#fff'; c.font = '700 12px Fredoka'; c.textAlign = 'center'; c.fillText('OREO', bx, GROUND); }
     const people = view.family.slice().sort((a, b) => a.x - b.x);
     for (const p of people) A.person(c, p.look, p.x, GROUND + 6, 1.02, { face: p.face, arm: p.arm, t, blink: ((t + p.x) % 4) < 0.12 });
-    if (mode === 'title') { A.dog(c, 640, GROUND + 40, 2.2, { pose: 'sit', age: 0.35, t, tongue: true, blink: (t % 3.5) < 0.12, look: Math.sin(t * 0.7) }); }
+    if (view.extra === 'pickle') {
+      A.dog(c, d.x + 150, GROUND + 4, 1.35, { pose: 'bow', age: 0, t: t + 1.4, tongue: true, flip: true, coat: '#8c5830', earCol: '#5e3818', collar: '#39d0b8', blink: ((t + 1.1) % 3.4) < 0.12 });
+    }
+    if (mode === 'title') { A.dog(c, 640, GROUND + 40, 2.2, { pose: d.pose || 'sit', age: 0.35, t, tongue: true, blink: (t % 3.5) < 0.12, look: Math.sin(t * 0.7) }); }
     else A.dog(c, d.x, GROUND + 4, 1.45, { pose: d.pose, phase: d.phase || t * 8, age: d.age != null ? d.age : age(), t, tongue: d.tongue, flip: d.flip, ball: d.ball, wag: d.wag, blink: d.sleepy || (t % 3.7) < 0.12, sleepy: d.sleepy, look: d.look });
     if (mg && mg.id === 'nap') mg.draw();
     for (const p of parts) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.g || 20) * dt; p.life -= dt; c.globalAlpha = Math.max(0, Math.min(1, p.life)); c.font = p.s + 'px sans-serif'; c.textAlign = 'center'; c.fillText(p.e, p.x, p.y); }
@@ -389,7 +396,27 @@
 
   // ---------- input ----------
   cv.addEventListener('pointermove', ev => { if (!mg || mg.id !== 'cuddle' || !(ev.buttons & 1) && ev.pointerType === 'mouse') return; const r = cv.getBoundingClientRect(), k = W / r.width; mg.stroke((ev.clientX - r.left) * k, (ev.clientY - r.top) * k); });
-  cv.addEventListener('pointerdown', ev => { if (!mg) return; const r = cv.getBoundingClientRect(), k = W / r.width; const x = (ev.clientX - r.left) * k; if (mg.id === 'dig') mg.tap(x); });
+  cv.addEventListener('pointerdown', ev => {
+    AU.init();
+    const r = cv.getBoundingClientRect(), k = W / r.width;
+    const x = (ev.clientX - r.left) * k, y = (ev.clientY - r.top) * k;
+    if (mg) { if (mg.id === 'dig') mg.tap(x); return; }
+    // Pet Oreo or Pickle by tapping them on the canvas!
+    const dx = mode === 'title' ? 640 : view.dog.x;
+    if (Math.abs(x - (dx + 20)) < 110 && y > GROUND - 150 && y < GROUND + 40) {
+      AU.sfx(age() < 0.2 ? 'yip' : 'bark', age());
+      hearts(dx + 30, GROUND - 110, 5);
+      const prevPose = view.dog.pose;
+      if (prevPose === 'sit' || prevPose === 'stand') {
+        view.dog.pose = 'bow';
+        setTimeout(() => { if (view.dog && view.dog.pose === 'bow') view.dog.pose = prevPose; }, 650);
+      }
+      if (S) { S.happy = Math.min(100, S.happy + 2); buildHud(); }
+    } else if (view.extra === 'pickle' && Math.abs(x - (dx + 170)) < 90 && y > GROUND - 130 && y < GROUND + 40) {
+      AU.sfx('yip');
+      hearts(dx + 160, GROUND - 90, 4);
+    }
+  });
   document.addEventListener('click', ev => {
     AU.init();
     const el = ev.target.closest('[data-a]'); if (!el) return;
@@ -406,9 +433,24 @@
     }
   });
   document.addEventListener('keydown', ev => {
-    if (!mg) return;
-    if (mg.id === 'walk') { if (ev.key === 'ArrowUp' || ev.key === ' ') { ev.preventDefault(); mg.hop(); } if (ev.key === 'ArrowRight' || ev.key === 's') mg.sniff(); }
-    if (mg.id === 'fetch' && ev.key === ' ') { ev.preventDefault(); mg.jump(); }
+    if (ev.key === 'm' || ev.key === 'M') {
+      AU.setMuted(!AU.muted);
+      const mb = hud.querySelector('[data-a="mute"]');
+      if (mb) mb.textContent = AU.muted ? '🔇' : '🔊';
+      return;
+    }
+    if (!mg) {
+      if (ev.key >= '1' && ev.key <= '6') {
+        const b = play.querySelector(`.story [data-opt="${+ev.key - 1}"]:not([disabled])`);
+        if (b) { ev.preventDefault(); b.click(); }
+      } else if (ev.key === 'Enter' || ev.key === ' ') {
+        const opts = play.querySelectorAll('.story [data-opt]:not([disabled])');
+        if (opts.length === 1) { ev.preventDefault(); opts[0].click(); }
+      }
+      return;
+    }
+    if (mg.id === 'walk') { if (ev.key === 'ArrowUp' || ev.key === ' ') { ev.preventDefault(); mg.hop(); } if (ev.key === 'ArrowRight' || ev.key === 's' || ev.key === 'S') mg.sniff(); }
+    if (mg.id === 'fetch' && (ev.key === ' ' || ev.key === 'ArrowUp')) { ev.preventDefault(); mg.jump(); }
   });
 
   // ---------- loop ----------
