@@ -53,11 +53,11 @@
     S.bond += Math.round(a.bond * (0.6 + score));
     S.picksLeft--; S.did[id] = true;
     const res = { id, score };
-    if (id === 'trick' && score >= 0.99 && S.tricks.length < D.TRICKS.length) { const tr = D.TRICKS[S.tricks.length]; S.tricks.push(tr.id); res.trick = tr; if (S.tricks.length === D.TRICKS.length) res.memory = addMemory(S, 'Every trick in the book', 'home'); }
+    if (id === 'trick' && score >= 0.99 && S.tricks.length < D.TRICKS.length) { const tr = D.TRICKS[S.tricks.length]; S.tricks.push(tr.id); res.trick = tr; if (S.tricks.length === D.TRICKS.length) res.memory = addMemory(S, 'mem.tricks', 'home'); }
     if (id === 'dig') { const tr = pickR(D.TREASURES); if (!S.treasures.includes(tr)) S.treasures.push(tr); res.treasure = tr; }
-    if (id === 'fetch') { const c = Math.round(score * 3); S.best.fetch = Math.max(S.best.fetch, c); if (c === 3) res.memory = addMemory(S, 'Three catches in a row', 'park'); }
-    if (id === 'walk' && score >= 0.9) res.memory = addMemory(S, 'The perfect walk', 'park');
-    if (id === 'cuddle' && score >= 0.95 && chapterOf(S.day) === 3) res.memory = addMemory(S, 'Slow Sunday cuddles', 'home');
+    if (id === 'fetch') { const c = Math.round(score * 3); S.best.fetch = Math.max(S.best.fetch, c); if (c === 3) res.memory = addMemory(S, 'mem.fetch3', 'park'); }
+    if (id === 'walk' && score >= 0.9) res.memory = addMemory(S, 'mem.walk', 'park');
+    if (id === 'cuddle' && score >= 0.95 && chapterOf(S.day) === 3) res.memory = addMemory(S, 'mem.cuddle', 'home');
     if (S.picksLeft <= 0) S.phase = 'evening';
     return res;
   }
@@ -81,18 +81,35 @@
     return meta;
   }
 
-  // Every memory there is to find (events plus the special ones).
+  // Every memory there is to find (events plus the special ones). Memories are kept by text key (caption) so they show in any language.
   function allMemories() {
     const out = [];
     for (const d of Object.keys(D.EVENTS)) for (const o of D.EVENTS[d].opts) out.push(o.memory);
-    return out.concat(['Every trick in the book', 'Three catches in a row', 'The perfect walk', 'Slow Sunday cuddles']);
+    return out.concat(['mem.tricks', 'mem.fetch3', 'mem.walk', 'mem.cuddle']);
+  }
+
+  // Saves from before the game had languages stored English text; turn it back into text keys.
+  const I = () => G.OREO_I18N;
+  const toKey = (s, re) => { if (typeof s !== 'string' || !I() || I().has(s)) return s; return I().keyForEnglish(s, k => re.test(k)) || s; };
+  function migrateMemory(m) { m.caption = toKey(m.caption, /^(mem\.|ev\.\d+\.\d\.memory$)/); if (m.text) m.text = toKey(m.text, /^ev\.\d+\.\d\.reply$/); return m; }
+  function migrate(S) {
+    S.memories = (S.memories || []).map(migrateMemory);
+    S.diary = toKey(S.diary, /^diary\./);
+    S.treasures = (S.treasures || []).map(x => toKey(x, /^treasure\./));
+    return S;
   }
 
   function save(S, store) { try { (store || G.localStorage).setItem(SAVE, JSON.stringify(S)); } catch (e) { /* storage may be full or unavailable */ } }
-  function load(store) { try { const s = (store || G.localStorage).getItem(SAVE); const S = s && JSON.parse(s); return S && S.v === 1 ? S : null; } catch (e) { return null; } }
+  function load(store) { try { const s = (store || G.localStorage).getItem(SAVE); const S = s && JSON.parse(s); return S && S.v === 1 ? migrate(S) : null; } catch (e) { return null; } }
   function wipe(store) { try { (store || G.localStorage).removeItem(SAVE); } catch (e) { /* ignore */ } }
   function saveMeta(m, store) { try { (store || G.localStorage).setItem(META, JSON.stringify(m)); } catch (e) { /* ignore */ } }
-  function loadMeta(store) { try { return JSON.parse((store || G.localStorage).getItem(META)) || {}; } catch (e) { return {}; } }
+  function loadMeta(store) {
+    try {
+      const m = JSON.parse((store || G.localStorage).getItem(META)) || {};
+      if (m.memories) { const out = {}; for (const k of Object.keys(m.memories)) { const x = migrateMemory(Object.assign({ caption: k }, m.memories[k])); out[x.caption] = x; } m.memories = out; }
+      return m;
+    } catch (e) { return {}; }
+  }
 
   G.OREO = { newLife, startDay, eventChoice, doActivity, dinner, sleep, finish, chapterOf, ageOf, allMemories, addMemory, save, load, wipe, saveMeta, loadMeta, setRandom: f => { R = f; } };
 })(typeof window !== 'undefined' ? window : globalThis);

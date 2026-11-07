@@ -424,7 +424,7 @@
     c.save(); c.beginPath(); c.ellipse(0, -18 - br, bodyL / 2 + 2, 18 + br, 0, 0, TAU); c.clip(); c.fillStyle = WHT; c.beginPath(); c.ellipse(bodyL / 2 - 6, -8, 20, 16, 0, 0, TAU); c.fill(); c.restore();
     c.fillStyle = BLK; rr(c, bodyL / 2 - 10, -12, 36, 12, 6); c.fill(); c.stroke(); c.fillStyle = WHT; rr(c, bodyL / 2 + 14, -12, 14, 12, 6); c.fill(); c.stroke();
     dogHead(c, bodyL / 2 + 8, -24, headK, Object.assign({}, o, { blink: asleep || o.blink, sleepy: asleep, tilt: asleep ? 0.25 : 0.1, ears: 0.3 }), BLK, WHT, EAR, GREY, t, old);
-    if (asleep) { c.fillStyle = 'rgba(255,255,255,.85)'; c.font = '700 16px Fredoka, sans-serif'; for (let i = 0; i < 3; i++) { const k = (t * 0.5 + i / 3) % 1; c.globalAlpha = 1 - k; c.fillText('z', bodyL / 2 + 30 + k * 30, -60 - k * 40 - i * 4); } c.globalAlpha = 1; }
+    if (asleep) { c.fillStyle = 'rgba(255,255,255,.85)'; c.font = '700 16px Fredoka, "Noto Sans Devanagari", "Nirmala UI", "Kohinoor Devanagari", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif'; for (let i = 0; i < 3; i++) { const k = (t * 0.5 + i / 3) % 1; c.globalAlpha = 1 - k; c.fillText('z', bodyL / 2 + 30 + k * 30, -60 - k * 40 - i * 4); } c.globalAlpha = 1; }
   }
 
   // ---------- places ----------
@@ -498,7 +498,7 @@
           // kennel
           c.strokeStyle = OUT; c.lineWidth = 4; c.fillStyle = '#d9604c'; c.beginPath(); c.moveTo(W - 330, fy - 60); c.lineTo(W - 240, fy - 140); c.lineTo(W - 150, fy - 60); c.closePath(); c.fill(); c.stroke();
           c.fillStyle = '#e8b47a'; c.fillRect(W - 320, fy - 62, 160, 90); c.strokeRect(W - 320, fy - 62, 160, 90); c.fillStyle = '#3a2214'; c.beginPath(); c.moveTo(W - 270, fy + 28); c.lineTo(W - 270, fy - 10); c.arc(W - 240, fy - 10, 30, Math.PI, TAU); c.lineTo(W - 210, fy + 28); c.fill();
-          c.fillStyle = '#fff'; c.font = '700 16px Fredoka, sans-serif'; c.textAlign = 'center'; c.fillText('OREO', W - 240, fy - 40);
+          c.fillStyle = '#fff'; c.font = '700 16px Fredoka, "Noto Sans Devanagari", "Nirmala UI", "Kohinoor Devanagari", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif'; c.textAlign = 'center'; c.fillText('OREO', W - 240, fy - 40);
           // flowers
           for (let i = 0; i < 16; i++) { const x = 40 + i * 75, y = fy - 30 + (i % 3) * 6; c.strokeStyle = '#3a8a3a'; c.lineWidth = 3; c.beginPath(); c.moveTo(x, y + 30); c.lineTo(x, y); c.stroke(); c.fillStyle = ['#ff6b8f', '#ffd43b', '#b48cff', '#fff'][i % 4]; for (let p = 0; p < 5; p++) { c.beginPath(); c.arc(x + Math.cos(p * 1.26) * 6, y + Math.sin(p * 1.26) * 6, 5, 0, TAU); c.fill(); } c.fillStyle = '#f2a03b'; c.beginPath(); c.arc(x, y, 4, 0, TAU); c.fill(); }
         }

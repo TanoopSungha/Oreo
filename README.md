@@ -12,6 +12,10 @@ Oreo is a fluffy, light cream cockapoo puppy who comes home to Mia and her famil
 - **Look after him:** tummy, energy and happiness. Dinner and bedtime round off every day.
 - **The memory album** keeps a real snapshot of every special moment, and carries over between lives.
 
+## Languages
+
+Oreo speaks English, Français, Deutsch, Español, हिन्दी and 简体中文. Pick a language on the title screen, or tap the 🌐 button at the top right during play (keys 1 to 6 choose, Esc closes). The game switches straight away, no restart, and remembers your choice. On first launch it follows your device's language when it is one of these six. Oreo keeps his name in every language. The text lives in `src/i18n/<language>.js`.
+
 ## Run it
 
 ```

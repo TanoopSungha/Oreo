@@ -4,14 +4,16 @@
 @font-face { font-family: "Fredoka"; src: url(assets/fonts/fredoka-latin-700-normal.woff2) format("woff2"); font-weight: 700 900; font-display: swap; }
 @font-face { font-family: "Luckiest Guy"; src: url(assets/fonts/luckiest-guy-latin-400-normal.woff2) format("woff2"); font-display: swap; }
 :root { --ink: #3a2418; --cream: #fff8ec; --paper: #fbefd8; --honey: #f2a03b; --rose: #ff7aa0; --sage: #6cc05a; --sky: #7ec8ff;
-  --display: "Fredoka", "Trebuchet MS", system-ui, sans-serif; --logo: "Luckiest Guy", "Fredoka", Impact, sans-serif; }
+  /* After the game's own fonts: Devanagari (Hindi) and Simplified Chinese fallbacks for Linux/Android, Windows and Mac. */
+  --intl: "Noto Sans Devanagari", "Nirmala UI", "Kohinoor Devanagari", "Noto Sans SC", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB";
+  --display: "Fredoka", "Trebuchet MS", var(--intl), system-ui, sans-serif; --logo: "Luckiest Guy", "Fredoka", Impact, var(--intl), sans-serif; }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: #2a1a10; color: var(--ink); font-family: var(--display); overflow: hidden; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 #frame { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(1200px 700px at 50% 40%, #5a3a20, #1a0f08); }
 #stage { position: relative; width: 1280px; height: 720px; transform-origin: center center; overflow: hidden; border-radius: 6px; box-shadow: 0 30px 80px rgba(0,0,0,.5); }
 #scene { position: absolute; inset: 0; display: block; touch-action: none; }
-#hud, #play, #toasts, #screen { position: absolute; inset: 0; pointer-events: none; }
-#hud > *, #play > *, #screen > * { pointer-events: auto; }
+#hud, #play, #toasts, #screen, #overlay { position: absolute; inset: 0; pointer-events: none; }
+#hud > *, #play > *, #screen > *, #overlay > * { pointer-events: auto; }
 button { font-family: var(--display); font-weight: 600; cursor: pointer; border: 3px solid var(--ink); border-radius: 18px; background: var(--honey); color: var(--ink); font-size: 19px; padding: 9px 20px; box-shadow: 0 4px 0 var(--ink); transition: transform .08s, box-shadow .08s, filter .1s; }
 button:hover { filter: brightness(1.07); }
 button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
@@ -42,7 +44,7 @@ button.honey { background: var(--honey); color: var(--ink); }
 .story .act { display: flex; align-items: center; gap: 8px; }
 .story .act .ic { font-size: 22px; }
 .story .tap { font-size: 13px; color: #8a5a3a; }
-.toast { position: absolute; left: 50%; top: 86px; transform: translateX(-50%); background: var(--cream); border: 3px solid var(--ink); border-radius: 16px; padding: 8px 18px; font-size: 17px; box-shadow: 0 4px 0 var(--ink); animation: toast 3s forwards; white-space: nowrap; }
+.toast { position: absolute; left: 50%; top: 86px; transform: translateX(-50%); background: var(--cream); border: 3px solid var(--ink); border-radius: 16px; padding: 8px 18px; font-size: 17px; box-shadow: 0 4px 0 var(--ink); animation: toast 3s forwards; width: max-content; max-width: 1000px; text-align: center; }
 .toast.rose { background: #ffd0de; } .toast.gold { background: #ffe8a8; }
 @keyframes toast { 0% { opacity: 0; transform: translate(-50%, -14px); } 10% { opacity: 1; transform: translate(-50%, 0); } 85% { opacity: 1; } 100% { opacity: 0; } }
 
@@ -71,7 +73,7 @@ button.honey { background: var(--honey); color: var(--ink); }
 @keyframes drop { from { opacity: 0; transform: translateY(-60px) rotate(-12deg) scale(1.2); } to { opacity: 1; transform: rotate(var(--r)); } }
 
 /* ---------- little games ---------- */
-.mg { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.mg { position: absolute; left: 50%; top: 64px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
 .mg > * { pointer-events: auto; }
 .mg .title { font-family: var(--logo); font-size: 46px; color: #fff; -webkit-text-stroke: 2px var(--ink); text-shadow: 0 5px 0 var(--ink); }
 .mg .hint { color: #fff; font-size: 18px; text-shadow: 0 2px 0 var(--ink); background: rgba(58,36,24,.45); padding: 4px 14px; border-radius: 12px; }
@@ -81,8 +83,9 @@ button.honey { background: var(--honey); color: var(--ink); }
 .bigbtns { position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); display: flex; gap: 14px; }
 .bigbtns button { font-size: 26px; padding: 14px 30px; border-radius: 22px; }
 .trickpad { display: flex; gap: 10px; }
-.trickpad button { width: 112px; height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 15px; }
+.trickpad button { width: 112px; min-height: 96px; padding: 6px 4px; line-height: 1.1; overflow-wrap: anywhere; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 15px; }
 .trickpad button span { font-size: 34px; }
+.trickpad button span[data-i18n] { font-size: 15px; }
 .trickpad button.lit { background: #fff6a8; transform: scale(1.08); }
 
 /* ---------- intro video (same Snoopster intro as the other games) ---------- */
@@ -90,3 +93,20 @@ button.honey { background: var(--honey); color: var(--ink); }
 #intro .intro.fadeout { opacity: 0; }
 #intro video { width: 100%; height: 100%; object-fit: contain; }
 #intro .skip { position: absolute; bottom: 22px; left: 0; right: 0; text-align: center; color: #aaa; font-size: 13px; letter-spacing: .08em; }
+
+/* ---------- languages ---------- */
+.albumh { font-family: var(--logo); font-weight: 400; font-size: 40px; text-align: center; }
+.endh { font-family: var(--logo); font-weight: 400; font-size: 44px; }
+.langs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.langs .lang { font-size: 15px; padding: 6px 14px; min-height: 40px; border-radius: 14px; background: var(--cream); box-shadow: 0 3px 0 var(--ink); }
+.langs .lang.on { background: var(--honey); }
+.langcard { text-align: center; display: flex; flex-direction: column; gap: 16px; max-width: 760px; }
+.langcard h2 { font-family: var(--logo); font-weight: 400; font-size: 40px; }
+.langcard .langs .lang { font-size: 19px; padding: 9px 18px; }
+#overlay .panel { z-index: 20; }
+/* Devanagari and Chinese: the display fonts have no glyphs, so soften the heavy outlines and keep line height for the matras. */
+:root[data-lang="hi"] .chapter .big, :root[data-lang="zh-Hans"] .chapter .big { font-weight: 700; -webkit-text-stroke-width: 3px; line-height: 1.25; font-size: 88px; }
+:root[data-lang="hi"] .mg .title, :root[data-lang="zh-Hans"] .mg .title { font-weight: 700; -webkit-text-stroke-width: 1.5px; }
+:root[data-lang="hi"] .mg .score, :root[data-lang="zh-Hans"] .mg .score { -webkit-text-stroke-width: 1.5px; }
+:root[data-lang="hi"] .albumh, :root[data-lang="zh-Hans"] .albumh, :root[data-lang="hi"] .endh, :root[data-lang="zh-Hans"] .endh, :root[data-lang="hi"] .langcard h2, :root[data-lang="zh-Hans"] .langcard h2 { font-weight: 700; }
+:root[data-lang="hi"] .story .txt { line-height: 1.5; }

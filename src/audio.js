@@ -227,7 +227,7 @@
     const who = (opts.id || 'oreo').toLowerCase();
     if (who === 'oreo') {
       const age = opts.age == null ? 0.4 : opts.age;
-      const lower = String(text).toLowerCase();
+      const lower = String(opts.en || text).toLowerCase(); // mood words are English; opts.en carries the English line
       if (lower.includes('crunch')) SFX.crunch();
       else if (lower.includes('sleep') || lower.includes('night') || lower.includes('tired') || lower.includes('sigh')) SFX.sigh(age);
       else if (lower.includes('miss') || lower.includes('cry') || lower.includes('sad')) SFX.whine(age);
@@ -236,7 +236,7 @@
       return 0.45;
     }
     const prof = VOICE_PROFILES[who] || VOICE_PROFILES.mia;
-    const clean = String(text).replace(/<[^>]*>/g, '').replace(/[^\w\s?!.,']/g, '');
+    const clean = String(opts.en || text).replace(/<[^>]*>/g, '').replace(/[^\w\s?!.,']/g, '');
     const words = clean.split(/\s+/).filter(Boolean).slice(0, 12);
     let t = ctx.currentTime + 0.02, count = 0;
     for (let w = 0; w < words.length && count < 18; w++) {
